@@ -1,26 +1,38 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
+import JSBridge from 'react-js-bridge';
+import AccessToken from './AccessToken';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component{
+
+  state = {
+    authId: null,
+    openId: null,
+  };
+
+  onClick = () => {
+    JSBridge.call('paytmFetchAuthCode',{
+      clientId:"/*your reqClient ID*/"},
+      function(result) {
+       var obj = JSON.parse(result);
+       this.setState({authId: obj.authId, openId: obj.openId});
+    });
+    if((!this.state.authId) || (!this.state.openId)){
+      // redirect to login page and display message
+      <p>Please approve to get into Website</p>
+    }
+    else{
+      <AccessToken authId={this.state.authId}/>
+    }
+  }
+
+  render(){
+    return(
+      <div>
+        <button onClick={this.onClick}>Paytm</button>
+      </div>
+    );
+  }
 }
 
 export default App;
